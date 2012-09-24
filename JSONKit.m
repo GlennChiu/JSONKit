@@ -678,6 +678,7 @@ static JKArray *_JKArrayCreate(id *objects, NSUInteger count, BOOL mutableCollec
     JKArray *array = NULL;
     if(JK_EXPECT_T((array = (JKArray *)calloc(1UL, _JKArrayInstanceSize)) != NULL)) { // Directly allocate the JKArray instance via calloc.
         array->isa      = _JKArrayClass;
+        free(array);
         if((array = [array init]) == NULL) { return(NULL); }
         array->capacity = count;
         array->count    = count;
@@ -927,6 +928,7 @@ static JKDictionary *_JKDictionaryCreate(id *keys, NSUInteger *keyHashes, id *ob
     JKDictionary *dictionary = NULL;
     if(JK_EXPECT_T((dictionary = (JKDictionary *)calloc(1UL, _JKDictionaryInstanceSize)) != NULL)) { // Directly allocate the JKDictionary instance via calloc.
         dictionary->isa      = _JKDictionaryClass;
+        free(dictionary);
         if((dictionary = [dictionary init]) == NULL) { return(NULL); }
         dictionary->capacity = _JKDictionaryCapacityForCount(count);
         dictionary->count    = 0UL;
