@@ -1,6 +1,6 @@
-# JSONKit LLVM 4.0 support
+# JSONKit Xcode 4.5 and LLVM 4.1 support
 
-Updated source code to apply with Apple's LLVM 4.0 compiler.
+Updated source code to apply with Xcode 4.5 and Apple's LLVM 4.1 compiler.
 
 ### JSONKit
 
