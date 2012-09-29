@@ -676,16 +676,12 @@ void jk_collectionClassLoadTimeInitialization(void) {
 static JKArray *_JKArrayCreate(id *objects, NSUInteger count, BOOL mutableCollection) {
     NSCParameterAssert((objects != NULL) && (_JKArrayClass != NULL) && (_JKArrayInstanceSize > 0UL));
     JKArray *array = NULL;
-    if(JK_EXPECT_T((array = (JKArray *)calloc(1UL, _JKArrayInstanceSize)) != NULL)) { // Directly allocate the JKArray instance via calloc.
-        array->isa      = _JKArrayClass;
-        free(array);
-        if((array = [array init]) == NULL) { return(NULL); }
-        array->capacity = count;
-        array->count    = count;
-        if(JK_EXPECT_F((array->objects = (id *)malloc(sizeof(id) * array->capacity)) == NULL)) { [array autorelease]; return(NULL); }
-        memcpy(array->objects, objects, array->capacity * sizeof(id));
-        array->mutations = (mutableCollection == NO) ? 0UL : 1UL;
-    }
+    if((array = [[JKArray alloc] init]) == NULL) { return(NULL); }
+    array->capacity = count;
+    array->count    = count;
+    if(JK_EXPECT_F((array->objects = (id *)malloc(sizeof(id) * array->capacity)) == NULL)) { [array autorelease]; return(NULL); }
+    memcpy(array->objects, objects, array->capacity * sizeof(id));
+    array->mutations = (mutableCollection == NO) ? 0UL : 1UL;
     return(array);
 }
 
@@ -926,20 +922,16 @@ static void _JKDictionaryResizeIfNeccessary(JKDictionary *dictionary) {
 static JKDictionary *_JKDictionaryCreate(id *keys, NSUInteger *keyHashes, id *objects, NSUInteger count, BOOL mutableCollection) {
     NSCParameterAssert((keys != NULL) && (keyHashes != NULL) && (objects != NULL) && (_JKDictionaryClass != NULL) && (_JKDictionaryInstanceSize > 0UL));
     JKDictionary *dictionary = NULL;
-    if(JK_EXPECT_T((dictionary = (JKDictionary *)calloc(1UL, _JKDictionaryInstanceSize)) != NULL)) { // Directly allocate the JKDictionary instance via calloc.
-        dictionary->isa      = _JKDictionaryClass;
-        free(dictionary);
-        if((dictionary = [dictionary init]) == NULL) { return(NULL); }
-        dictionary->capacity = _JKDictionaryCapacityForCount(count);
-        dictionary->count    = 0UL;
-        
-        if(JK_EXPECT_F((dictionary->entry = (JKHashTableEntry *)calloc(1UL, sizeof(JKHashTableEntry) * dictionary->capacity)) == NULL)) { [dictionary autorelease]; return(NULL); }
-        
-        NSUInteger idx = 0UL;
-        for(idx = 0UL; idx < count; idx++) { _JKDictionaryAddObject(dictionary, keyHashes[idx], keys[idx], objects[idx]); }
-        
-        dictionary->mutations = (mutableCollection == NO) ? 0UL : 1UL;
-    }
+    if((dictionary = [[JKDictionary alloc] init]) == NULL) { return(NULL); }
+    dictionary->capacity = _JKDictionaryCapacityForCount(count);
+    dictionary->count    = 0UL;
+    
+    if(JK_EXPECT_F((dictionary->entry = (JKHashTableEntry *)calloc(1UL, sizeof(JKHashTableEntry) * dictionary->capacity)) == NULL)) { [dictionary autorelease]; return(NULL); }
+    
+    NSUInteger idx = 0UL;
+    for(idx = 0UL; idx < count; idx++) { _JKDictionaryAddObject(dictionary, keyHashes[idx], keys[idx], objects[idx]); }
+    
+    dictionary->mutations = (mutableCollection == NO) ? 0UL : 1UL;
     return(dictionary);
 }
 
@@ -2868,7 +2860,7 @@ errorExit:
         jk_managedBuffer_release(&encodeState->stringBuffer);
         jk_managedBuffer_release(&encodeState->utf8ConversionBuffer);
         free(encodeState); encodeState = NULL;
-    }  
+    }
 }
 
 - (void)dealloc
